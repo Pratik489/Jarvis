@@ -1,0 +1,190 @@
+'''
+Author=Pratik Kokate
+Praject = Jarvis Project
+
+
+'''
+
+
+
+
+import pyttsx3#Voice module,External
+import datetime#Gives date and time,BuiltIn
+import speech_recognition as sr#"sr" is nothing its only a created shortcut for speechRecognition
+import wikipedia #wikipedia
+import webbrowser# /Google /Youtube /Stackflow
+import os #email , music
+import smtplib #Email
+import random#use to play random songs
+
+engine = pyttsx3.init('sapi5')#('sapi5')--->We use to collect the voices, Windows gives us this API
+voices = engine.getProperty('voices')#use to get voice inbuilt in windows ,it contain two voices one is male and other female, We can impoet externsl voices also
+
+
+engine.setProperty('voice',voices[0].id)#It set the voices,"0=DAVID"for male and "1=ZIRA" for female
+# print(voices[0].id)#we use this check the audio is weather male or female
+
+
+def speak(audio):
+    '''
+    This is Dock_String = Speak function
+    This speak function use to speak all required in two 
+    voices David and Zira
+
+    '''
+    engine.say(audio)
+    engine.runAndWait()
+
+def wishMe():
+    '''
+    Use for welcome the Guest 
+
+
+    '''
+    hour = int(datetime.datetime.now().hour)
+    if hour>=0 and hour<12:
+        speak("Good Mouring!")
+
+    elif hour>=12 and hour<16:
+        speak("Good Afternoon!")
+
+    elif hour>=16 and hour<19:
+        speak("Good Evening!")
+
+    else:
+        speak("Good Night!")
+    
+    speak("I am a Jarvis Sir, Plese tell me, How me i help You")
+    
+def takecommand():
+    '''
+    It takes microphone input from the user and return the string
+    
+    '''
+    r = sr.Recognizer()#Help to recognizer the audio
+    with sr.Microphone() as source:
+        print("listening...")
+        r.pause_threshold = 1#Help to pause for 1 second while listening...
+        audio = r.listen(source)#By pressing Control key get detail information
+
+        try:
+            print("Recognizing...")
+            quary = r.recognize_google(audio ,language="en-in")#English-India, recognize_google--->check useing control key
+            print(f"User said-{quary}")
+            
+            # speak(quary)
+
+        except Exception as e:
+            # print(e)#Don't write it becose it will print an error if it occors
+            print("Say that try again, Plese...")
+            return "None"
+        return quary
+
+
+def sendEmail(to ,content):
+
+    server = smtplib.SMTP('smtp.gmail.com' , 587)
+    server.ehlo()
+    server.starttls()
+    server.login('kokatepratik489@gmail.com' , 'Pratik@123')
+    server.sendmail('kokatepratik489@gmail.com' , to , content)
+    server.close()
+
+
+
+
+
+if __name__ == "__main__":
+    wishMe()
+    
+    
+    while True:#It run infinite loop, Continues repitation
+    # if 1:
+        quary = takecommand().lower()#Prevent from Sign convention errors
+
+    # Logic for exicuting tasks based on quary
+
+        if 'wikipedia' in quary:
+            speak("Searching Wikipedia...")
+            quary = quary.replace("wikipedia", "")#Replace wikipedia into empty
+            results = wikipedia.summary(quary , sentences =  2)#It will give result according to wikipedia in two sentences
+            speak("According to wikipedia...")
+            speak(results)
+            # print(results)
+
+
+        elif 'open google' in quary:
+            webbrowser.open("google.com")
+
+        elif 'open youtube' in quary:
+            webbrowser.open("youtube.com")
+
+        elif 'open stackoverflow' in quary:
+            webbrowser.open("stackoverflow.com")
+
+        elif 'the time' in quary:
+            strTime = datetime.datetime.now().strftime("%H, %M , %S")
+            print(strTime)
+            speak(f"Sir , the time is {strTime}")
+
+        elif 'open the code' in quary:
+            codePath = "C:\\Users\\PRATIK\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
+            os.startfile(codePath)
+
+        elif 'open pycharm' in quary:
+            pychar = "C:\\Program Files\\JetBrains\\PyCharm Community Edition 2020.1.4\\bin\\pycharm64.exe"
+            os.startfile(pychar)
+
+
+        elif 'song' in quary:
+            music  = "D:\\Audio"
+            songs = os.listdir(music)
+            pk = random.randint(1 ,6)#random function we have use here , to print song randomly
+
+
+            # print(songs)#It's only to check
+            os.startfile(os.path.join(music , songs[pk]))
+
+
+        elif 'very good' in quary:
+            speak("Thank you ,Sir ")
+
+        elif 'love you' in quary:
+            speak("I love you too ,Sir ")
+
+        elif 'thank you' in quary:
+            speak("Wellcome you , Sir")
+
+        elif 'how are you' in quary:
+            speak("I am fine sir , You")
+
+        elif 'hello' in quary:
+            speak("Hallo! ,Sir")
+
+        elif 'email to pratik'in quary:
+            try:
+                speak("What should i say?")
+                content = takecommand()
+                to = "pk799594@gmail.com"
+                sendEmail(to ,content)
+                speak("Email has been send!")
+            except Exception as e:
+                print(e)
+                speak("SORRY ,Sir I am not able to send an email ,plese try again later")
+
+        elif 'exit' in quary:
+            speak("Thank you sir, Have a nice day")
+            exit()
+            
+
+
+
+
+
+
+           
+           
+
+
+
+    
